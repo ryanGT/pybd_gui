@@ -601,6 +601,8 @@ class replace_block_dialog(add_block_dialog):
         #
         # Conceptual question: do I force the new block to have the same
         # input(s) as the old block?
+        #import pdb
+        #pdb.set_trace()
         new_block = self._create_new_block()
         self.get_input_names()
         self.set_inputs(new_block)
@@ -608,9 +610,14 @@ class replace_block_dialog(add_block_dialog):
         place_dict = copy.copy(self.placement_kwargs)
         pt = place_dict.pop('placement_type')
 
+        print("place_dict = %s" % place_dict)
+
         if pt == 'absolute':
             # get abs kwargs
-            new_block.place_absolute(**place_dict)
+            #place_absolute(self, x=None, y=None):
+            x_abs = place_dict['abs_x']
+            y_abs = place_dict['abs_y']
+            new_block.place_absolute(x=x_abs, y=y_abs)
         elif pt == 'relative':
             rel_block_name = place_dict.pop('rel_block_name')
             rel_block = self.parent.get_block_by_name(rel_block_name)
@@ -627,6 +634,10 @@ class replace_block_dialog(add_block_dialog):
         # - handled placement
         # - find all references in self.parent.bd and replace them:
         self.parent.bd.replace_block(self.old_block, new_block)
+        self.parent.reset_block_list()
+        # When this is done, how to I verify that the dict is right and 
+        # the name of the new_block matches the old_block and all 
+        # references have updated?
         self.destroy()
 
 

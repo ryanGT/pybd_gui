@@ -29,7 +29,7 @@ The helper dialogs are:
 
 """
 
-
+version = "1.0.0"
 ############################################
 #
 # Features needed:
@@ -144,6 +144,7 @@ import tkinter
 import tkinter as tk
 from tkinter import ttk
 from tkinter.messagebox import askyesno
+import tkinter.filedialog
 
 #from matplotlib.backends.backend_tkagg import (
 #    FigureCanvasTkAgg, NavigationToolbar2Tk)
@@ -172,7 +173,8 @@ from pybd_gui.edit_blocks_dialog import edit_blocks_dialog
 from pybd_gui.loop_assigner import loop_number_assigner
 
 import py_block_diagram as pybd
-import os, txt_mixin
+import os
+from krauss_misc import txt_mixin
 
 pad_options = {'padx': 5, 'pady': 5}
 
@@ -210,15 +212,20 @@ class pybd_gui(tk.Tk):
         self['menu'] = self.menubar
         self.menu_file = tk.Menu(self.menubar)
         self.menu_edit = tk.Menu(self.menubar)
+        self.menu_blocks = tk.Menu(self.menubar)
         self.menu_block_diagram = tk.Menu(self.menubar)
         self.menu_macros = tk.Menu(self.menubar)        
         self.menu_codegen = tk.Menu(self.menubar)        
         self.menubar.add_cascade(menu=self.menu_file, label='File')
         self.menubar.add_cascade(menu=self.menu_edit, label='Edit')
+        self.menubar.add_cascade(menu=self.menu_blocks, label='Blocks')        
         self.menubar.add_cascade(menu=self.menu_block_diagram, label='Block Diagram')        
-        self.menubar.add_cascade(menu=self.menu_macros, label='Macros')
         self.menubar.add_cascade(menu=self.menu_codegen, label='Code Generation')
+        self.menubar.add_cascade(menu=self.menu_macros, label='Macros')
+        self.menubar.add_cascade(menu=self.menu_macros, label='Macros')
 
+        self.menu_edit.add_command(label="Edit Block", \
+                command=self.on_edit_btn)
         self.menu_edit.add_command(label="Delete Block", command=self.on_delete_block)
         self.menu_edit.add_command(label="Replace Block", command=self.on_replace_block)
         self.menu_edit.add_command(label="Clear Model",command=self.clear)
@@ -227,6 +234,17 @@ class pybd_gui(tk.Tk):
         self.menu_file.add_command(label='Load', command=self.on_load_menu)        
         #menu_file.add_command(label='Open...', command=openFile)
         self.menu_file.add_command(label='Quit', command=self._quit)
+
+        self.menu_blocks.add_command(label="Add Block", \
+                command=self.add_block)
+        self.menu_blocks.add_command(label="Place Block", \
+                command=self.on_place_btn)
+        self.menu_blocks.add_command(label="Set Input(s)", \
+                command=self.on_set_inputs)
+        self.menu_blocks.add_command(label="Edit Block", \
+                command=self.on_edit_btn)
+        
+
         self.menu_block_diagram.add_command(label="Set Print Blocks", command=self.on_set_print_blocks)
         self.menu_block_diagram.add_command(label="Set Execution Order for Blocks", \
                                             command=self.on_set_execution_order)
@@ -301,6 +319,10 @@ class pybd_gui(tk.Tk):
         in pybd_gui.param_list, such as
         `pybd_gui.arduino_template_path`."""
         self.load_params()
+
+    def destroy(self):
+        print("Yo!")
+        tk.Tk.destroy(self)
 
 
     def add_G_cart_and_sensors(self, *args, **kwargs):
@@ -409,6 +431,18 @@ class pybd_gui(tk.Tk):
         """Generate the Arduino code by using the block diagram's
         `generate_arduino_code` function."""
         print("in arduino_codegen function")
+        # check for valide template path
+        msg = "You must set the Arduino template \n path before generating code."
+
+        if hasattr(self, 'arduino_template_path'):
+            if not self.arduino_template_path or not os.path.exists(self.arduino_template_path):
+                showinfo(title="Problem", message=msg)
+                return
+        else:
+            showinfo(title="Problem", message=msg)
+            return
+
+
         if not self.arduino_output_folder:
             self.set_arduino_output_folder()
         rest, output_name = os.path.split(self.arduino_output_folder)
@@ -616,7 +650,7 @@ class pybd_gui(tk.Tk):
         if root is None:
             root = self
 
-        myvar = tk.StringVar([])
+        myvar = tk.StringVar(value=[])
 
         mywidget = tk.Listbox(root, \
                               listvariable=myvar, \
@@ -739,6 +773,11 @@ class pybd_gui(tk.Tk):
             self.bd.delete_block(block)
             self.block_list_var.set(self.bd.block_name_list)
 
+
+    def reset_block_list(self, *args, **kwargs):
+        self.block_list_var.set(self.bd.block_name_list)
+
+
     def on_replace_block(self, *args, **kwargs):
         """Assuming a block is selected, call the add block dialog to get the
         new block to replace it with.
@@ -799,21 +838,26 @@ class pybd_gui(tk.Tk):
         # get selected indices
         selected_indices = self.blocklistbox.curselection()
         if not selected_indices:
-            # if no blocks are selected, clear input and placement boxes
-            self.clear_boxes()
+            print("no block selected")
             return
+        #if not selected_indices:
+        #    # if no blocks are selected, clear input and placement boxes
+        #    self.clear_boxes()
+        #    return
         # - if the selected block is an input, hide input widgets
         #     - pybd.source_block
         # - if the selected block is not an instance of block_with_two_inputs, hide input2 widgets
         #     - pybd.block_with_two_inputs
         #     - could also be an if_block with three inputs
         # - populate entry boxes if input1 or input2 blocks are set
+        print("selected_indices: %s" % selected_indices)
         block_name = self.blocklistbox.get(selected_indices)
         block = self.get_block_by_name(block_name)
+        self.selected_block = block
 
-        place_str = block.get_placememt_str()
-        print("place_str: %s" % place_str)
-        self.fill_placement_entry(place_str)
+        #place_str = block.get_placememt_str()
+        #print("place_str: %s" % place_str)
+        #self.fill_placement_entry(place_str)
 
         # this seemed like a good idea at the time, but it is now 
         # overly cute and complicated and a little cluttered
@@ -831,66 +875,66 @@ class pybd_gui(tk.Tk):
         #   - it seems like the classes (at least the base classes) need a list
         #     of input variables 
 
-        if isinstance(block, pybd.source_block):
-            self.hide_input_widgets()
-            # exit before populating the input boxes
-            return
-        elif isinstance(block, pybd.block_with_two_inputs):
-            self.unhide_input_widgets()
-        else:
-            # assume one input
-            self.unhide_input1_widgets()
-            self.hide_input2_widgets()
+        #if isinstance(block, pybd.source_block):
+        #    self.hide_input_widgets()
+        #    # exit before populating the input boxes
+        #    return
+        #elif isinstance(block, pybd.block_with_two_inputs):
+        #    self.unhide_input_widgets()
+        #else:
+        #    # assume one input
+        #    self.unhide_input1_widgets()
+        #    self.hide_input2_widgets()
 
-        # populate the entry boxes if appropriate
-        if block.input_block1 is not None:
-            in1_name = block.input_block1.variable_name
-            self.input1_var.set(in1_name)
-        else:
-            # clear
-            self.input1_var.set("")
-            
-        if isinstance(block, pybd.block_with_two_inputs):
-            if block.input_block2 is not None:
-                in2_name = block.input_block2.variable_name
-                self.input2_var.set(in2_name)
-            else:
-                # clear
-                self.input2_var.set("")
+        ## populate the entry boxes if appropriate
+        #if block.input_block1 is not None:
+        #    in1_name = block.input_block1.variable_name
+        #    self.input1_var.set(in1_name)
+        #else:
+        #    # clear
+        #    self.input1_var.set("")
+        #    
+        #if isinstance(block, pybd.block_with_two_inputs):
+        #    if block.input_block2 is not None:
+        #        in2_name = block.input_block2.variable_name
+        #        self.input2_var.set(in2_name)
+        #    else:
+        #        # clear
+        #        self.input2_var.set("")
 
         
                 
-    def _hide_widgets(self, widget_list):
-        for widget in widget_list:
-            widget.grid_remove()
+    #def _hide_widgets(self, widget_list):
+    #    for widget in widget_list:
+    #        widget.grid_remove()
 
 
-    def _unhide_widgets(self, widget_list):
-        for widget in widget_list:
-            widget.grid()
-        
+    #def _unhide_widgets(self, widget_list):
+    #    for widget in widget_list:
+    #        widget.grid()
+    #    
 
-    def hide_input_widgets(self):
-        self._hide_widgets(self.input1_widgets)
-        self._hide_widgets(self.input2_widgets)
-
-
-    def unhide_input_widgets(self):
-        self._unhide_widgets(self.input1_widgets)
-        self._unhide_widgets(self.input2_widgets)
+    #def hide_input_widgets(self):
+    #    self._hide_widgets(self.input1_widgets)
+    #    self._hide_widgets(self.input2_widgets)
 
 
-    def unhide_input1_widgets(self):
-        self._unhide_widgets(self.input1_widgets)
+    #def unhide_input_widgets(self):
+    #    self._unhide_widgets(self.input1_widgets)
+    #    self._unhide_widgets(self.input2_widgets)
 
 
-    def unhide_input2_widgets(self):
-        self._unhide_widgets(self.input2_widgets)
+    #def unhide_input1_widgets(self):
+    #    self._unhide_widgets(self.input1_widgets)
 
 
-    def hide_input2_widgets(self):
-        self._hide_widgets(self.input2_widgets)
-        
+    #def unhide_input2_widgets(self):
+    #    self._unhide_widgets(self.input2_widgets)
+
+
+    #def hide_input2_widgets(self):
+    #    self._hide_widgets(self.input2_widgets)
+    #    
 
     def make_widgets(self):
         # don't assume that self.parent is a root window.
@@ -951,7 +995,9 @@ class pybd_gui(tk.Tk):
         ylim_label.grid(column=5, row=0, padx=5, pady=5, sticky='E')
         self.ymin_box.grid(column=6, row=0, padx=5, pady=5)#, sticky='E')
         self.ymax_box.grid(column=7, row=0, padx=5, pady=5)#,sticky='E')
-        self.zoom_btn = ttk.Button(self.button_frame1, text="Zoom", width=mywidth, command=self.on_zoom_btn)
+        self.zoom_btn = ttk.Button(self.button_frame1, text="Zoom",\
+                                   width=mywidth, \
+                                   command=self.on_zoom_btn)
         self.zoom_btn.grid(column=8, row=0, padx=5, pady=5)#,sticky='E')
         
         ## self.xlim_label = ttk.Label(self.button_frame1, text="xlim:")
@@ -997,40 +1043,42 @@ class pybd_gui(tk.Tk):
 
         padx_opts = {'padx':10}
 
+        # Moving this stuff to the menu
         # Input display and buttons
-        self.input1_label = ttk.Label(self.frame1, text="Input 1")
-        self.input1_label.grid(column=cur_col, row=2, sticky="SW", pady=(5,0), **padx_opts)
-        self.input1_var = tk.StringVar()
-        self.input1_box = ttk.Entry(self.frame1, textvariable=self.input1_var)
-        self.input1_box.grid(column=cur_col, row=3, sticky="NWE", pady=(0,5), **padx_opts)
-        self.set_intput1_btn = ttk.Button(self.frame1, text='Set Input 1', command=self.on_set_input1)
-        self.set_intput1_btn.grid(column=cur_col, row=4, pady=(2,5))
-        self.input2_label = ttk.Label(self.frame1, text="Input 2")
-        self.input2_label.grid(column=cur_col, row=5, sticky="SW", pady=(5,0), **padx_opts)
-        self.input2_var = tk.StringVar()
-        self.input2_box = ttk.Entry(self.frame1, textvariable=self.input2_var)
-        self.input2_box.grid(column=cur_col, row=6, sticky="NWE", pady=(0,5), **padx_opts)
-        self.set_intput2_btn = ttk.Button(self.frame1, text='Set Input 2', command=self.on_set_input2)
-        self.set_intput2_btn.grid(column=cur_col, row=7, pady=(2,5))
 
-        self.input1_widgets = [self.input1_label, self.input1_box, self.set_intput1_btn]
-        self.input2_widgets = [self.input2_label, self.input2_box, self.set_intput2_btn]
+        #self.input1_label = ttk.Label(self.frame1, text="Input 1")
+        #self.input1_label.grid(column=cur_col, row=2, sticky="SW", pady=(5,0), **padx_opts)
+        #self.input1_var = tk.StringVar()
+        #self.input1_box = ttk.Entry(self.frame1, textvariable=self.input1_var)
+        #self.input1_box.grid(column=cur_col, row=3, sticky="NWE", pady=(0,5), **padx_opts)
+        #self.set_intput1_btn = ttk.Button(self.frame1, text='Set Input 1', command=self.on_set_input1)
+        #self.set_intput1_btn.grid(column=cur_col, row=4, pady=(2,5))
+        #self.input2_label = ttk.Label(self.frame1, text="Input 2")
+        #self.input2_label.grid(column=cur_col, row=5, sticky="SW", pady=(5,0), **padx_opts)
+        #self.input2_var = tk.StringVar()
+        #self.input2_box = ttk.Entry(self.frame1, textvariable=self.input2_var)
+        #self.input2_box.grid(column=cur_col, row=6, sticky="NWE", pady=(0,5), **padx_opts)
+        #self.set_intput2_btn = ttk.Button(self.frame1, text='Set Input 2', command=self.on_set_input2)
+        #self.set_intput2_btn.grid(column=cur_col, row=7, pady=(2,5))
+
+        #self.input1_widgets = [self.input1_label, self.input1_box, self.set_intput1_btn]
+        #self.input2_widgets = [self.input2_label, self.input2_box, self.set_intput2_btn]
         
         # Placement display and buttons
-        self.placement_label = ttk.Label(self.frame1, text="Placement")
-        self.placement_label.grid(column=cur_col, row=8, sticky="SW", pady=(5,0), **padx_opts)
-        self.placement_var = tk.StringVar()
-        self.placement_box = ttk.Entry(self.frame1, textvariable=self.placement_var)
-        self.placement_box.grid(column=cur_col, row=9, sticky="NWE", pady=(0,5), **padx_opts)
-        self.placement_btn = ttk.Button(self.frame1, text='Place', command=self.on_place_btn)
-        self.placement_btn.grid(column=cur_col, row=10, pady=(2,5))
+        #self.placement_label = ttk.Label(self.frame1, text="Placement")
+        #self.placement_label.grid(column=cur_col, row=8, sticky="SW", pady=(5,0), **padx_opts)
+        #self.placement_var = tk.StringVar()
+        #self.placement_box = ttk.Entry(self.frame1, textvariable=self.placement_var)
+        #self.placement_box.grid(column=cur_col, row=9, sticky="NWE", pady=(0,5), **padx_opts)
+        #self.placement_btn = ttk.Button(self.frame1, text='Place', command=self.on_place_btn)
+        #self.placement_btn.grid(column=cur_col, row=10, pady=(2,5))
 
-        self.edit_btn = ttk.Button(self.frame1, text='Edit Block', command=self.on_edit_btn)
-        self.edit_btn.grid(column=cur_col, row=11, pady=(2,5))
+        #self.edit_btn = ttk.Button(self.frame1, text='Edit Block', command=self.on_edit_btn)
+        #self.edit_btn.grid(column=cur_col, row=11, pady=(2,5))
         
 
-        col1_list = [self.input1_label, self.input1_box, self.set_intput1_btn, \
-                     self.input2_label, self.input2_box, self.set_intput2_btn]
+        #col1_list = [self.input1_label, self.input1_box, self.set_intput1_btn, \
+        #             self.input2_label, self.input2_box, self.set_intput2_btn]
 
         #for i, widget in enumerate(col1_list):
         #    widget.grid(row=i+2, column=cur_col)
@@ -1084,6 +1132,31 @@ class pybd_gui(tk.Tk):
             print("selected_indices: %s" % selected_indices)
             block_name = self.blocklistbox.get(selected_indices)
             return block_name
+
+
+
+
+    def on_set_inputs(self, *args, **kwargs):
+        print("in on_set_inputs")
+        selected_index = self.get_selected_block_index()
+        block_name = self.get_selected_block_name("you must select a block before setting its input(s)")
+        if not block_name:
+            return None
+        block = self.get_block_by_name(block_name)
+        input_dialog = input_chooser(block, parent=self, geometry='300x200', \
+                                     selected_index=selected_index)
+        input_dialog.grab_set()#<-- this "unchooses" the block
+
+        # reset the block choice and show selected inputs:
+
+        #class input_chooser(my_toplevel_window):
+        #    def __init__(self, block, parent, title="Input Chooser Dialog", \
+        
+
+        # - pop up a small custom dialog
+        # - let user choose the input
+        # - set the block's input
+        # - destroy the dialog
 
 
     def on_set_input1(self, *args, **kwargs):
@@ -1229,11 +1302,11 @@ class pybd_gui(tk.Tk):
         self.refresh_actuator_names()
 
         
-    def clear_boxes(self, *args, **kwargs):
-        attr_list = ["input1_var", "input2_var", "placement_var"]
-        for attr in attr_list:
-            myvar = getattr(self, attr)
-            myvar.set("")
+    #def clear_boxes(self, *args, **kwargs):
+    #    attr_list = ["input1_var", "input2_var", "placement_var"]
+    #    for attr in attr_list:
+    #        myvar = getattr(self, attr)
+    #        myvar.set("")
 
 
     def on_place_btn(self, *args, **kwargs):

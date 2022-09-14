@@ -235,8 +235,8 @@ class place_block_dialog(tk.Toplevel):
                                  xshift=xshift, yshift=yshift)
 
         block_place_str = block.get_placememt_str()
-        print("block_place_str: %s" % block_place_str)
-        self.parent.fill_placement_entry(block_place_str)
+        #print("block_place_str: %s" % block_place_str)
+        #self.parent.fill_placement_entry(block_place_str)
             
         self.destroy()
 

@@ -99,7 +99,7 @@ class my_toplevel_window(tk.Toplevel):
         if root is None:
             root = self
 
-        myvar = tk.StringVar([])
+        myvar = tk.StringVar(value=[])
 
         mywidget = tk.Listbox(root, \
                               listvariable=myvar, \

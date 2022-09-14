@@ -16,7 +16,7 @@ from tkinter import ttk
 from tkinter import ttk
 from tkinter.messagebox import showinfo
 
-from tkinter_utils import my_toplevel_window
+from pybd_gui.tkinter_utils import my_toplevel_window
 
 import py_block_diagram as pybd
 
