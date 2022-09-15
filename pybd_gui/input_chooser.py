@@ -43,7 +43,14 @@ class input_chooser(my_toplevel_window):
 
 
     def make_widgets(self):
+        ## These are the new parameters for inputs:
+        ##           num_inputs = 1, \
+        ##         gui_input_labels=['Input 1'], \
+        ##        set_input_func_names=['set_input_block1'], \
+        
         mycol = 0
+        ## This code creates the labels and combo boxes:
+        ## - I need to put this in some kind of loop
         self.make_label_and_grid_sw(self.main_label_text, 0, mycol)
         self.make_combo_and_var_grid_nw("input_chooser", 1, mycol)
         self.all_block_names = self.bd.find_single_output_blocks_and_sensors()
