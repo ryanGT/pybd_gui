@@ -5,7 +5,7 @@ import setuptools
 
 setuptools.setup(
     name='pybd_gui',    # This is the name of your PyPI-package.
-    version='1.0.0',
+    version='1.0.3',
     url='https://github.com/ryanGT/pybd_gui',
     author='Ryan Krauss',
     author_email='ryanwkrauss@gmail.com',
@@ -13,7 +13,8 @@ setuptools.setup(
     #long_description=long_description,
     #long_description_content_type="text/markdown",
     install_requires=[
-          'py_block_diagram',
+          'py_block_diagram',  \
+          'krauss_misc', \
     ],
     packages=setuptools.find_packages(),
     classifiers=[

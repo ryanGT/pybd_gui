@@ -29,7 +29,7 @@ The helper dialogs are:
 
 """
 
-version = "1.0.0"
+version = "1.0.3"
 ############################################
 #
 # Features needed:
@@ -164,7 +164,7 @@ from tkinter.messagebox import askyesno
 from pybd_gui.add_block_dialog import add_block_dialog, replace_block_dialog
 from pybd_gui.place_block_dialog import place_block_dialog
 from pybd_gui.input_chooser import input_chooser, input2_chooser
-from pybd_gui.multi_block_selector import print_block_selector
+from pybd_gui.multi_block_selector import print_block_selector_v2
 
 #from tkinter import simpledialog
 
@@ -738,7 +738,9 @@ class pybd_gui(tk.Tk):
         # - select which blocks are for printing from a listbox widget
         # - send the corresponding block list to self.bd
         #     - might have to look up the blocks by name
-        mydialog = print_block_selector(title="Select Print Blocks", parent=self)
+        #print_block_selector_v2
+        mydialog = print_block_selector_v2(title="Select Print Blocks", \
+                parent=self)
         mydialog.grab_set()
 
 
@@ -1143,6 +1145,12 @@ class pybd_gui(tk.Tk):
         if not block_name:
             return None
         block = self.get_block_by_name(block_name)
+        N = block.num_inputs
+        print("N = %s" % N)
+        if N == 0:
+            msg = "You cannot set the input(s) \n for a block that has no inputs"
+            showinfo(title="Problem", message=msg)
+            return None
         input_dialog = input_chooser(block, parent=self, geometry='300x200', \
                                      selected_index=selected_index)
         input_dialog.grab_set()#<-- this "unchooses" the block

@@ -133,7 +133,10 @@ class my_toplevel_window(tk.Toplevel):
         return self.make_widget_and_var_grid_nw(basename, row, col, type="combobox", root=root)        
 
 
-    def make_button_and_grid(self, btn_text, row, col, command=None, root=None, sticky=None):
+    def make_button_and_grid(self, btn_text, row, col, \
+                             command=None, root=None, \
+                             sticky=None, \
+                             padx=10, pady=10):
         if root is None:
             root = self
 
@@ -147,7 +150,7 @@ class my_toplevel_window(tk.Toplevel):
             grid_opts['sticky'] = sticky
 
         mybutton = ttk.Button(root, text=btn_text, **kwargs)
-        mybutton.grid(column=col, row=row, pady=10, padx=10, **grid_opts)
+        mybutton.grid(column=col, row=row, pady=pady, padx=padx, **grid_opts)
         return mybutton
 
 

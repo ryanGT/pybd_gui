@@ -11,6 +11,8 @@ import py_block_diagram as pybd
 
 import copy
 
+from krauss_misc import string_cleaner
+
 
 
 # Updated approach:
@@ -37,6 +39,7 @@ class input_chooser(my_toplevel_window):
         self.columnconfigure(0, weight=4)
         self.block = block
         self.block_name = self.block.variable_name
+        self.N = self.block.num_inputs
         self.setfunc = self.block.set_input_block1
         self.main_label_text = "Choose the input for block: %s" % self.block_name 
         self.make_widgets()
@@ -49,10 +52,16 @@ class input_chooser(my_toplevel_window):
         ##        set_input_func_names=['set_input_block1'], \
         
         mycol = 0
-        ## This code creates the labels and combo boxes:
+        if self.N == 1:
+            base = "Setting the input for %s"
+        elif self.N > 1:
+            base = "Setting the inputs for %s"
+        top_label_text = base % self.block_name
+        self.top_label = self.make_label(top_label_text, root=self)
+        self.grid_widget(self.top_label, row=0, col=mycol, padx=10, pady=5, sticky='nw')
         ## - I need to put this in some kind of loop
-        self.make_label_and_grid_sw(self.main_label_text, 0, mycol)
-        self.make_combo_and_var_grid_nw("input_chooser", 1, mycol)
+        #self.make_label_and_grid_sw(self.main_label_text, 0, mycol)
+        #self.make_combo_and_var_grid_nw("input_chooser", 1, mycol)
         self.all_block_names = self.bd.find_single_output_blocks_and_sensors()
         print("all_block_names:")
         pybd.print_list(self.all_block_names)
@@ -62,7 +71,29 @@ class input_chooser(my_toplevel_window):
         if self.block_name in self.all_block_names:
             myind = self.all_block_names.index(self.block_name)
             self.other_block_names.pop(myind)
-        self.input_chooser_combobox['values'] =  self.other_block_names
+        
+        # make a combox box and string var for each input
+        self.input_vars = []
+        currow = 1
+        for i in range(self.N):
+            # make widget
+            curlabel = self.block.gui_input_labels[i]
+            self.make_label_and_grid_sw(curlabel, currow, mycol)
+            currow += 1
+            basename = string_cleaner.label_to_attr_name(curlabel)
+            var_name = basename + '_var'
+            cur_combo = self.make_combo_and_var_grid_nw(basename, currow, mycol)
+            cur_var = getattr(self, var_name)
+            self.input_vars.append(cur_var)
+            currow += 1
+            cur_combo['values'] =  self.other_block_names
+            get_name_attr = self.block.get_input_func_names[i]
+            get_name_func = getattr(self.block, get_name_attr)
+            in_name = get_name_func()
+            if in_name:
+                if in_name in self.other_block_names:
+                    myindex = self.other_block_names.index(in_name)
+                    cur_combo.current(myindex)
         #self.input_chooser_combobox.bind('<<ComboboxSelected>>', self.input_combo_selected)
         
         # go button
@@ -72,14 +103,21 @@ class input_chooser(my_toplevel_window):
 
     def on_go_button(self, *args, **kwargs):
         print("on_go_button pressed")
-        input_name = self.input_chooser_var.get()
-        print("input_name: %s" % input_name)
-        if input_name in self.bd.block_dict:
-            input_block = self.bd.get_block_by_name(input_name)
-        elif input_name in self.bd.sensors_dict:
-            input_block = self.bd.get_sensor_by_name(input_name)
-        self.setfunc(input_block)
-        self.parent.blocklistbox.select_set(self.selected_index)
+        # - get the chosen block name for each input
+        # - set the inputs
+        for i in range(self.N):
+            cur_var = self.input_vars[i]
+            input_name = cur_var.get()
+            print("input_name: %s" % input_name)
+            if input_name in self.bd.block_dict:
+                input_block = self.bd.get_block_by_name(input_name)
+            elif input_name in self.bd.sensors_dict:
+                input_block = self.bd.get_sensor_by_name(input_name)
+            func_name = self.block.set_input_func_names[i]
+            myfunc = getattr(self.block, func_name)
+            myfunc(input_block)
+        # what does the line below do?
+        #self.parent.blocklistbox.select_set(self.selected_index)
         self.destroy()
         # - get name from combobox
         # - get the selected block by name
