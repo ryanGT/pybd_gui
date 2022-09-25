@@ -5,7 +5,7 @@ import setuptools
 
 setuptools.setup(
     name='pybd_gui',    # This is the name of your PyPI-package.
-    version='1.0.3',
+    version='1.0.4',
     url='https://github.com/ryanGT/pybd_gui',
     author='Ryan Krauss',
     author_email='ryanwkrauss@gmail.com',

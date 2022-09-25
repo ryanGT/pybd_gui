@@ -29,7 +29,7 @@ The helper dialogs are:
 
 """
 
-version = "1.0.3"
+version = "1.0.4"
 ############################################
 #
 # Features needed:
@@ -171,6 +171,7 @@ from pybd_gui.multi_block_selector import print_block_selector_v2
 from pybd_gui.actuator_or_sensor_chooser import actuator_chooser, sensor_chooser
 from pybd_gui.edit_blocks_dialog import edit_blocks_dialog
 from pybd_gui.loop_assigner import loop_number_assigner
+from pybd_gui.menu_params_dialog import menu_params_dialog
 
 import py_block_diagram as pybd
 import os
@@ -222,7 +223,7 @@ class pybd_gui(tk.Tk):
         self.menubar.add_cascade(menu=self.menu_block_diagram, label='Block Diagram')        
         self.menubar.add_cascade(menu=self.menu_codegen, label='Code Generation')
         self.menubar.add_cascade(menu=self.menu_macros, label='Macros')
-        self.menubar.add_cascade(menu=self.menu_macros, label='Macros')
+        #self.menubar.add_cascade(menu=self.menu_macros, label='Macros')
 
         self.menu_edit.add_command(label="Edit Block", \
                 command=self.on_edit_btn)
@@ -246,10 +247,12 @@ class pybd_gui(tk.Tk):
         
 
         self.menu_block_diagram.add_command(label="Set Print Blocks", command=self.on_set_print_blocks)
-        self.menu_block_diagram.add_command(label="Set Execution Order for Blocks", \
-                                            command=self.on_set_execution_order)
-        self.menu_block_diagram.add_command(label="Set Loop Numbers", command=self.on_set_loop_numbers)
-        self.menu_block_diagram.add_command(label="Clear Loop Numbers", command=self.on_clear_loop_numbers)
+        self.menu_block_diagram.add_command(label="Set Menu Parameters", \
+                command=self.on_set_menu_params) 
+        #self.menu_block_diagram.add_command(label="Set Execution Order for Blocks", \
+        #                                    command=self.on_set_execution_order)
+        #self.menu_block_diagram.add_command(label="Set Loop Numbers", command=self.on_set_loop_numbers)
+        #self.menu_block_diagram.add_command(label="Clear Loop Numbers", command=self.on_clear_loop_numbers)
         self.menu_macros.add_command(label="Add cart/pendulum plant and sensors", \
                 command=self.add_G_cart_and_sensors)
 
@@ -319,6 +322,12 @@ class pybd_gui(tk.Tk):
         in pybd_gui.param_list, such as
         `pybd_gui.arduino_template_path`."""
         self.load_params()
+
+
+    def on_set_menu_params(self, *args, **kwargs):
+        mydialog = menu_params_dialog(parent=self)
+        mydialog.grab_set()
+
 
     def destroy(self):
         print("Yo!")

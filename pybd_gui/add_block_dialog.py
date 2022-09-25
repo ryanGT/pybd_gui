@@ -232,6 +232,7 @@ class add_block_dialog(my_toplevel_window, window_with_param_widgets_that_appear
             widget = getattr(self, attr)
             widget.grid()
 
+
     def show_sensor1_widgets(self):
         self._show_from_attr_name_list(self.sensor1_widget_list)
 
