@@ -279,7 +279,9 @@ class add_block_dialog(my_toplevel_window, window_with_param_widgets_that_appear
 
         # actuators and sensors are handled separately, so filter them out:
         all_params = copy.copy(py_params)
-        mypoplist = ['actuator','sensor','sensor1','sensor2']
+        mypoplist = ['actuator','sensor', \
+                     'sensor1','sensor2', \
+                     'sensor_name','actuator_name']
         param_list = [item for item in all_params if item not in mypoplist]
         
         N_params = len(param_list)

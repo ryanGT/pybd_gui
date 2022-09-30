@@ -29,7 +29,7 @@ The helper dialogs are:
 
 """
 
-version = "1.0.4"
+version = "1.0.5"
 ############################################
 #
 # Features needed:
@@ -1309,7 +1309,7 @@ class pybd_gui(tk.Tk):
         # - the model should have no blocks, sensors, or actuators
         # - the gui boxes should all be empty
         self.bd = pybd.block_diagram()
-        self.clear_boxes()
+        #self.clear_boxes()
         self.block_list_var.set([])
         self.ax.clear()
         self.bd.ax = self.ax
