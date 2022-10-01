@@ -217,8 +217,12 @@ class add_block_dialog(my_toplevel_window, window_with_param_widgets_that_appear
 
 
     def hide_actuator_widgets(self):
+        print("in hide_actuator_widgets")
         self._hide_from_attr_name_list(self.actuator_widget_list)
 
+    
+    def show_actuator_widgets(self):
+        self._show_from_attr_name_list(self.actuator_widget_list)
 
 
     def show_act_and_sense_combos(self):
@@ -312,6 +316,12 @@ class add_block_dialog(my_toplevel_window, window_with_param_widgets_that_appear
             self.show_sensor2_widgets()
         else:
             self.hide_sensor2_widgets()
+        # hide actuators here if necessary
+        if block_type in pybd.plants_with_no_actuators_names:
+            self.hide_actuator_widgets()
+        elif block_type in pybd.plant_class_names:
+            self.show_actuator_widgets()
+
         self.selected_block_type = block_type
         suggested_name = self.parent.bd.suggest_block_name(block_type)
         self.block_name.set(suggested_name)

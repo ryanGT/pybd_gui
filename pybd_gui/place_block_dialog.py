@@ -10,7 +10,12 @@ from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import (FigureCanvasTkAgg, NavigationToolbar2Tk)
 
+## To DO list
+## - blocks cannot choose to be relative to themselves
+## - first block placed should default to absolute (0,0)
+## - relative blocks should default to relative to their input
 import numpy as np
+import copy
 
 from tkinter import ttk
 from tkinter.messagebox import showinfo
@@ -105,6 +110,9 @@ class place_block_dialog(tk.Toplevel):
         self.block_to_place_combobox['values'] = self.parent.get_block_name_list()
         self.grid_box_nw(self.block_to_place_combobox, 1, curcol)
 
+        self.block_to_place_combobox.bind("<<ComboboxSelected>>", \
+                self.on_block_to_place_selected)
+
         # Placement type
         self.label2 = self.make_label_and_grid_sw("Placement Type", 2, curcol)
         self.placement_type_var = tk.StringVar()
@@ -161,13 +169,80 @@ class place_block_dialog(tk.Toplevel):
 
 
         # setup for relative placement default
-        self.set_defaults()
-        self.hide_abs_widgets()
-        self.unhide_relative_widgets()
+        placed_block_names = self.parent.bd.find_placed_blocks()
+        if len(placed_block_names) == 0:
+            self.set_abs_defaults()
+            self.hide_relative_widgets()
+            self.unhide_abs_widgets()
+        else:
+            self.set_defaults()
+            self.hide_abs_widgets()
+            self.unhide_relative_widgets()
+
+
+    def get_name_of_block_to_place(self, *args, **kwargs):
+        block_name = self.block_to_place_var.get()
+        return block_name
+
+
+    def get_block_to_place(self, *args, **kwargs):
+        block_name = self.get_name_of_block_to_place()
+        block = self.parent.get_block_by_name(block_name)
+        return block
+
+
+    def on_block_to_place_selected(self, *args, **kwargs):
+        self.set_legal_relative_blocks()
+
+
+    def set_legal_relative_blocks(self, *args, **kwargs):
+        print("in set_legal_relative_blocks")
+        # Approach:
+        # - you should only be able to place relative
+        #   to blocks that are already placed
+        # - you should not be able to place relative 
+        #   to yourself
+        if self.any_placed():
+            # allow/expect relative placement
+            # - do not allow a block to be relative to itself
+            # - default to relative to the input if it is set
+            placed_blocks = placed_block_names = self.parent.bd.find_placed_blocks()
+            myblocks = copy.copy(placed_blocks)
+            block_name = self.get_name_of_block_to_place()
+            if block_name in myblocks:
+                myblocks.remove(block_name)
+        else:
+            myblocks = []
+
+        self.relative_block_combobox['values'] = myblocks
+            
+    
+    def any_placed(self):
+        placed_block_names = self.parent.bd.find_placed_blocks()
+        if len(placed_block_names) == 0:
+            return False
+        else:
+            return True
+
+
+    def set_abs_defaults(self):
+        print("setting abs defaults")
+        self.placement_type_var.set("absolute")
+        self.placement_type_combobox.current(0)
+        self.abs_x_var.set("0")
+        self.abs_y_var.set("0")
 
 
     def set_defaults(self):
         print("setting defaults")
+        if self.any_placed():
+            self.set_relative_defaults()
+        else:
+            self.set_abs_defaults()
+
+
+    def set_relative_defaults(self):
+        print("setting relative defaults")
         self.placement_type_var.set("relative")
         self.relative_direction_var.set("right")
         self.rel_dist_var.set("4")
@@ -186,12 +261,22 @@ class place_block_dialog(tk.Toplevel):
         
 
     def set_block_to_place(self, block_name):
+        # called by the main gui before showing the
+        # place dialog
+        # on_block_to_place_selected(
         self.block_to_place_var.set(block_name)
         block = self.parent.get_block_by_name(block_name)
+        self.set_legal_relative_blocks()
         if block.placement_type:
             self.set_widgets_to_block(block)
         else:
             self.set_defaults()
+            if hasattr(block, "input_block1_name"):
+                if block.input_block1_name:
+                    input_block = block.input_block1_name
+                    self.relative_block_var.set(input_block)
+                    
+
 
     def go_pressed(self, *args, **kwargs):
         place_type = self.placement_type_var.get()
