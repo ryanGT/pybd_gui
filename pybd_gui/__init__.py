@@ -246,9 +246,12 @@ class pybd_gui(tk.Tk):
                 command=self.on_edit_btn)
         
 
-        self.menu_block_diagram.add_command(label="Set Print Blocks", command=self.on_set_print_blocks)
+        self.menu_block_diagram.add_command(label="Set Print Blocks", \
+                command=self.on_set_print_blocks)
         self.menu_block_diagram.add_command(label="Set Menu Parameters", \
                 command=self.on_set_menu_params) 
+        self.menu_block_diagram.add_command(label="Redraw Wires", \
+                command=self.on_redraw_wires)
         #self.menu_block_diagram.add_command(label="Set Execution Order for Blocks", \
         #                                    command=self.on_set_execution_order)
         #self.menu_block_diagram.add_command(label="Set Loop Numbers", command=self.on_set_loop_numbers)
@@ -1272,6 +1275,15 @@ class pybd_gui(tk.Tk):
                                                           **kwargs)
         
         self.notebook.add(self.sensors_frame, text='Sensors')
+
+
+    def on_redraw_wires(self, *args, **kwargs):
+        self.bd.update_block_list()
+        block_list = self.bd.block_list
+        for block in block_list:
+            block.clear_wire_start_and_end()
+
+        self.on_draw_btn()
 
 
     def on_draw_btn(self, *args, **kwargs):

@@ -289,6 +289,8 @@ class place_block_dialog(tk.Toplevel):
 
         block_name = self.block_to_place_var.get()
         block = self.parent.get_block_by_name(block_name)
+
+        block.clear_wire_start_and_end()
         
         if place_type == "absolute":
             print("going absolute")
