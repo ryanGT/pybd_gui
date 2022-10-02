@@ -29,7 +29,7 @@ The helper dialogs are:
 
 """
 
-version = "1.0.5"
+version = "1.0.7"
 ############################################
 #
 # Features needed:
@@ -137,7 +137,7 @@ version = "1.0.5"
 #               - self.actuator_param1_var
 #               - self.actuator_param1_entry
 #             - then a dict or list to map to the params for a particular sensor or actuator
-#  
+#
 #iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiii
 
 import tkinter
@@ -215,12 +215,12 @@ class pybd_gui(tk.Tk):
         self.menu_edit = tk.Menu(self.menubar)
         self.menu_blocks = tk.Menu(self.menubar)
         self.menu_block_diagram = tk.Menu(self.menubar)
-        self.menu_macros = tk.Menu(self.menubar)        
-        self.menu_codegen = tk.Menu(self.menubar)        
+        self.menu_macros = tk.Menu(self.menubar)
+        self.menu_codegen = tk.Menu(self.menubar)
         self.menubar.add_cascade(menu=self.menu_file, label='File')
         self.menubar.add_cascade(menu=self.menu_edit, label='Edit')
-        self.menubar.add_cascade(menu=self.menu_blocks, label='Blocks')        
-        self.menubar.add_cascade(menu=self.menu_block_diagram, label='Block Diagram')        
+        self.menubar.add_cascade(menu=self.menu_blocks, label='Blocks')
+        self.menubar.add_cascade(menu=self.menu_block_diagram, label='Block Diagram')
         self.menubar.add_cascade(menu=self.menu_codegen, label='Code Generation')
         self.menubar.add_cascade(menu=self.menu_macros, label='Macros')
         #self.menubar.add_cascade(menu=self.menu_macros, label='Macros')
@@ -231,8 +231,8 @@ class pybd_gui(tk.Tk):
         self.menu_edit.add_command(label="Replace Block", command=self.on_replace_block)
         self.menu_edit.add_command(label="Clear Model",command=self.clear)
         self.menu_file.add_command(label='Save', command=self.on_save_menu)
-        self.menu_file.add_command(label='Save As', command=self.on_save_as_menu)        
-        self.menu_file.add_command(label='Load', command=self.on_load_menu)        
+        self.menu_file.add_command(label='Save As', command=self.on_save_as_menu)
+        self.menu_file.add_command(label='Load', command=self.on_load_menu)
         #menu_file.add_command(label='Open...', command=openFile)
         self.menu_file.add_command(label='Quit', command=self._quit)
 
@@ -244,12 +244,12 @@ class pybd_gui(tk.Tk):
                 command=self.on_set_inputs)
         self.menu_blocks.add_command(label="Edit Block", \
                 command=self.on_edit_btn)
-        
+
 
         self.menu_block_diagram.add_command(label="Set Print Blocks", \
                 command=self.on_set_print_blocks)
         self.menu_block_diagram.add_command(label="Set Menu Parameters", \
-                command=self.on_set_menu_params) 
+                command=self.on_set_menu_params)
         self.menu_block_diagram.add_command(label="Redraw Wires", \
                 command=self.on_redraw_wires)
         #self.menu_block_diagram.add_command(label="Set Execution Order for Blocks", \
@@ -276,7 +276,7 @@ class pybd_gui(tk.Tk):
                                          command=self.get_python_gen_template)
         self.python_gen_menu.add_command(label='Set Python Output Path', \
                                       command=self.set_python_gen_output_path)
-        self.python_gen_menu.add_command(label='Generate Python Code', command=self.python_codegen)          
+        self.python_gen_menu.add_command(label='Generate Python Code', command=self.python_codegen)
         self.rpi_menu = tk.Menu(self.menu_codegen)
         self.menu_codegen.add_cascade(menu=self.rpi_menu, label='Raspberry Pi Code Generation')
         self.rpi_menu.add_command(label='Set RPi Template File', command=self.set_rpi_template)
@@ -291,15 +291,15 @@ class pybd_gui(tk.Tk):
        #self.bind("<Key>", self.key_pressed)
         self.bind('<Control-q>', self._quit)
         self.bind('<q>', self._quit)
-        self.bind('<p>', self.python_codegen)        
+        self.bind('<p>', self.python_codegen)
         self.bind('<Control-s>', self.on_save_menu)
         self.bind('<Control-l>', self.on_load_menu)
         self.bind('<Control-a>', self.add_block)
-        self.bind('<a>', self.add_block)        
+        self.bind('<a>', self.add_block)
         self.bind('<Control-P>', self.on_place_btn)
         self.bind('<Alt-p>', self.on_place_btn)
         self.bind('<Control-d>', self.on_draw_btn)
-        
+
         # configure the root window
         self.make_widgets()
 
@@ -364,7 +364,7 @@ class pybd_gui(tk.Tk):
         if pend_enc_name not in self.bd.sensors_dict:
             pend_enc = pybd.custom_sensor(variable_name=pend_enc_name, \
                                             arduino_class='pendulum_encoder')
-            self.bd.append_sensor(pend_enc) 
+            self.bd.append_sensor(pend_enc)
 
         self.refresh_sensor_names()
 
@@ -373,7 +373,7 @@ class pybd_gui(tk.Tk):
             # Note that this will fail if line_sense and pend_enc already exist
             # and aren't created above:
             G_cart = pybd.cart_pendulum(sensor1=line_sense, sensor2=pend_enc, \
-                                        variable_name='G_cart') 
+                                        variable_name='G_cart')
             self.append_block_to_dict(G_cart_name, G_cart)
 
 
@@ -409,7 +409,7 @@ class pybd_gui(tk.Tk):
             self.load_model_from_csv(self.csv_path)
             # draw the BD
             self.on_draw_btn()
-            
+
 
     def save_params(self):
         """Save parameters from pybd_gui.param_list to a txt values as
@@ -417,8 +417,8 @@ class pybd_gui(tk.Tk):
         mydict = self.build_save_params_dict()
         my_string_list = dict_to_key_value_strings(mydict)
         txt_mixin.dump(self.params_path, my_string_list)
-        
-        
+
+
     def build_save_params_dict(self):
         """Build a dictionary of parameters to save to a txt file so
         that various things in the gui are preserved from session to
@@ -483,7 +483,7 @@ class pybd_gui(tk.Tk):
         print("blocks: %s" % self.bd.block_name_list)
         self.bd.generate_rpi_code(self.rpi_output_path, \
                                   template_path=self.rpi_template_path)
- 
+
 
     def set_arduino_template(self, *args, **kwargs):
         """Use a file dialog to allow the user to set the path to the
@@ -527,7 +527,7 @@ class pybd_gui(tk.Tk):
         showinfo(title='Information',
                 message='Arduino template file path: %s' % self.arduino_template_path)
 
-    
+
     def get_rpi_template(self, *args, **kwargs):
         """Show the current path to the Arduino codegen template file
         on a showinfo dialog.  This just lets the user check the
@@ -598,7 +598,7 @@ class pybd_gui(tk.Tk):
                                      )
 
 
-        
+
     def make_label(self, text, root=None):
         if root is None:
             root = self
@@ -633,7 +633,7 @@ class pybd_gui(tk.Tk):
     def make_widget_and_var_grid_nw(self, basename, row, col, type="entry", root=None):
         if root is None:
             root = self
-        
+
         myvar = tk.StringVar()
         if type.lower() == 'entry':
             widget_class = ttk.Entry
@@ -656,7 +656,7 @@ class pybd_gui(tk.Tk):
         setattr(self, var_attr, myvar)
         widget_attr = basename + tail
         setattr(self, widget_attr, mywidget)
-        
+
 
     def make_listbox_and_var(self, basename, row, col, root=None, height=6, grid_opts={}):
         if root is None:
@@ -678,7 +678,7 @@ class pybd_gui(tk.Tk):
     def make_entry_and_var_grid_nw(self, basename, row, col, root=None):
         if root is None:
             root = self
-        
+
         return self.make_widget_and_var_grid_nw(basename, row, col, type="entry", root=root)
         ## myvar = tk.StringVar()
         ## myentry = ttk.Entry(self, textvariable=myvar)
@@ -692,14 +692,14 @@ class pybd_gui(tk.Tk):
     def make_combo_and_var_grid_nw(self, basename, row, col, root=None):
         if root is None:
             root = self
-        
-        return self.make_widget_and_var_grid_nw(basename, row, col, type="combobox", root=root)        
+
+        return self.make_widget_and_var_grid_nw(basename, row, col, type="combobox", root=root)
 
 
     def make_button_and_grid(self, btn_text, row, col, command=None, root=None, sticky=None):
         if root is None:
             root = self
-            
+
         kwargs = {}
         if command is not None:
             kwargs['command'] = command
@@ -708,12 +708,12 @@ class pybd_gui(tk.Tk):
         if sticky is not None:
             print("sticky = %s" % sticky)
             grid_opts['sticky'] = sticky
-            
+
         mybutton = ttk.Button(root, text=btn_text, **kwargs)
         mybutton.grid(column=col, row=row, pady=10, padx=10, **grid_opts)
         return mybutton
-    
-        
+
+
 ############################
     def key_pressed(self, event):
         print("pressed:")
@@ -766,7 +766,7 @@ class pybd_gui(tk.Tk):
             self.csv_path = filename
             # also need to set the parameter
 
-    
+
     def on_save_menu(self, *args, **kwargs):
         print("in menu save")
         if hasattr(self, 'csv_path'):
@@ -806,7 +806,7 @@ class pybd_gui(tk.Tk):
         # call add block dialog
         mydialog = replace_block_dialog(title="Replace Block", parent=self)
         mydialog.grab_set()
- 
+
 
     def get_block_name_list(self):
         #block_list = self.bd._build_block_list()
@@ -817,13 +817,13 @@ class pybd_gui(tk.Tk):
     def get_block_by_name(self, block_name):
         return self.bd.get_block_by_name(block_name)
 
-    
+
     def append_block_to_dict(self, block_name, new_block):
         self.bd.append_block_to_dict(block_name, new_block)
-        # update listbox 
+        # update listbox
         self.block_list_var.set(self.bd.block_name_list)
 
-        
+
     def add_block(self, *args, **kwargs):
         #showinfo(title='Information',
         #        message='add block pressed')
@@ -832,7 +832,7 @@ class pybd_gui(tk.Tk):
         #print("%s, %s" % (mydialog.my_username, mydialog.my_password))
 
 
-        
+
     def _quit(self, *args, **kwargs):
         print("in _quit")
 
@@ -840,7 +840,7 @@ class pybd_gui(tk.Tk):
                         message='Do you want to save the block diagram to csv?')
         if answer:
             self.on_save_menu()
-                
+
 
         self.save_params()
         self.quit()     # stops mainloop
@@ -873,21 +873,21 @@ class pybd_gui(tk.Tk):
         #print("place_str: %s" % place_str)
         #self.fill_placement_entry(place_str)
 
-        # this seemed like a good idea at the time, but it is now 
+        # this seemed like a good idea at the time, but it is now
         # overly cute and complicated and a little cluttered
         # - there should be no input widgets
         # - all setting of inputs should be handled
         #   through a menu
         # - the input_chooser dialog should be redesigned to reflect this
         #   design decision
-        #   - the showing and hiding of various input widgets can move to the 
+        #   - the showing and hiding of various input widgets can move to the
         #     input_chooser dialog
         # - how do I cleanly handle cased like the if_block that have more than
         #   two inputs?
         #   - and especially where the other inputs have different names and
         #     purposes
         #   - it seems like the classes (at least the base classes) need a list
-        #     of input variables 
+        #     of input variables
 
         #if isinstance(block, pybd.source_block):
         #    self.hide_input_widgets()
@@ -907,7 +907,7 @@ class pybd_gui(tk.Tk):
         #else:
         #    # clear
         #    self.input1_var.set("")
-        #    
+        #
         #if isinstance(block, pybd.block_with_two_inputs):
         #    if block.input_block2 is not None:
         #        in2_name = block.input_block2.variable_name
@@ -916,8 +916,8 @@ class pybd_gui(tk.Tk):
         #        # clear
         #        self.input2_var.set("")
 
-        
-                
+
+
     #def _hide_widgets(self, widget_list):
     #    for widget in widget_list:
     #        widget.grid_remove()
@@ -926,7 +926,7 @@ class pybd_gui(tk.Tk):
     #def _unhide_widgets(self, widget_list):
     #    for widget in widget_list:
     #        widget.grid()
-    #    
+    #
 
     #def hide_input_widgets(self):
     #    self._hide_widgets(self.input1_widgets)
@@ -948,13 +948,13 @@ class pybd_gui(tk.Tk):
 
     #def hide_input2_widgets(self):
     #    self._hide_widgets(self.input2_widgets)
-    #    
+    #
 
     def make_widgets(self):
         # don't assume that self.parent is a root window.
         # instead, call `winfo_toplevel to get the root window
         #self.winfo_toplevel().title("Simple Prog")
-        #self.wm_title("Python Block Diagram GUI")        
+        #self.wm_title("Python Block Diagram GUI")
 
 
         # column 0
@@ -981,7 +981,7 @@ class pybd_gui(tk.Tk):
 
 
         mywidth=5
-        
+
         self.button_frame1 = ttk.Frame(self)
         self.quit_button = ttk.Button(self.button_frame1, text="Quit", width=mywidth, \
                                       command=self._quit)
@@ -1013,14 +1013,14 @@ class pybd_gui(tk.Tk):
                                    width=mywidth, \
                                    command=self.on_zoom_btn)
         self.zoom_btn.grid(column=8, row=0, padx=5, pady=5)#,sticky='E')
-        
+
         ## self.xlim_label = ttk.Label(self.button_frame1, text="xlim:")
         ## self.xlim.grid(row=0,column=2,sticky='E')
         ## self.xlim_var = tk.StringVar()
         ## self.xlim_box = ttk.Entry(self.button_frame1, textvariable=self.xlim_var)
         ## self.xlim_box.grid(column=3, row=0, sticky="W", padx=(0,5))
 
-        
+
         self.button_frame1.grid(row=20, column=0)
 
         # Column 1
@@ -1036,7 +1036,7 @@ class pybd_gui(tk.Tk):
         self.frame1.rowconfigure(1, weight=4)
 
         self.notebook.add(self.frame1, text='Blocks')
-        
+
         cur_col = 0# switching to notebook changes this
 
         self.block_label = ttk.Label(self.frame1, text="Blocks")
@@ -1050,7 +1050,7 @@ class pybd_gui(tk.Tk):
                                         #selectmode='extended'
                                        )
 
-        
+
         self.blocklistbox.grid(column=cur_col, row=1,sticky='nwes', pady=(0,5), padx=5)
         self.blocklistbox.bind('<<ListboxSelect>>', self.block_selected)
 
@@ -1077,7 +1077,7 @@ class pybd_gui(tk.Tk):
 
         #self.input1_widgets = [self.input1_label, self.input1_box, self.set_intput1_btn]
         #self.input2_widgets = [self.input2_label, self.input2_box, self.set_intput2_btn]
-        
+
         # Placement display and buttons
         #self.placement_label = ttk.Label(self.frame1, text="Placement")
         #self.placement_label.grid(column=cur_col, row=8, sticky="SW", pady=(5,0), **padx_opts)
@@ -1089,14 +1089,14 @@ class pybd_gui(tk.Tk):
 
         #self.edit_btn = ttk.Button(self.frame1, text='Edit Block', command=self.on_edit_btn)
         #self.edit_btn.grid(column=cur_col, row=11, pady=(2,5))
-        
+
 
         #col1_list = [self.input1_label, self.input1_box, self.set_intput1_btn, \
         #             self.input2_label, self.input2_box, self.set_intput2_btn]
 
         #for i, widget in enumerate(col1_list):
         #    widget.grid(row=i+2, column=cur_col)
-                                    
+
 
         #.grid_remove()
         # button
@@ -1116,7 +1116,7 @@ class pybd_gui(tk.Tk):
         ymax = float(self.ymax_var.get())
         self.ax.set_xlim([xmin,xmax])
         self.ax.set_ylim([ymin,ymax])
-        self.bd.axis_off()        
+        self.bd.axis_off()
         self.canvas.draw()
 
 
@@ -1171,7 +1171,7 @@ class pybd_gui(tk.Tk):
 
         #class input_chooser(my_toplevel_window):
         #    def __init__(self, block, parent, title="Input Chooser Dialog", \
-        
+
 
         # - pop up a small custom dialog
         # - let user choose the input
@@ -1194,7 +1194,7 @@ class pybd_gui(tk.Tk):
 
         #class input_chooser(my_toplevel_window):
         #    def __init__(self, block, parent, title="Input Chooser Dialog", \
-        
+
 
         # - pop up a small custom dialog
         # - let user choose the input
@@ -1239,8 +1239,8 @@ class pybd_gui(tk.Tk):
 
     def refresh_sensor_names(self):
         self.sensors_var.set(self.bd.sensor_name_list)
-        
-        
+
+
 
     def on_add_actuator_btn(self, *args, **kwargs):
         ## place_dialog.set_block_to_place(block_name)
@@ -1254,7 +1254,7 @@ class pybd_gui(tk.Tk):
         sensor_dialog = sensor_chooser(parent=self, geometry='300x600', \
                                            max_params=5)
         sensor_dialog.grab_set()
-        
+
 
     def make_sensors_frame(self):
         self.sensors_frame = ttk.Frame(self.notebook)#, width=400, height=280)
@@ -1273,7 +1273,7 @@ class pybd_gui(tk.Tk):
                                                           command=self.on_add_sensor_btn, \
                                                           sticky='n', \
                                                           **kwargs)
-        
+
         self.notebook.add(self.sensors_frame, text='Sensors')
 
 
@@ -1295,7 +1295,7 @@ class pybd_gui(tk.Tk):
         if len(block_list) > 0:
             self.bd.ax = self.ax
             self.bd.draw()
-            
+
             try:
                 xlims = self.bd.get_xlims()
                 ylims = self.bd.get_ylims()
@@ -1307,11 +1307,11 @@ class pybd_gui(tk.Tk):
                 self.ymax_var.set(str(ylims[1]))
             except:
                 print("axes limits not set")
-                
-            self.bd.axis_off()        
+
+            self.bd.axis_off()
             self.canvas.draw()
-            
-        
+
+
     def fill_placement_entry(self, place_str):
         self.placement_var.set(place_str)
 
@@ -1325,12 +1325,12 @@ class pybd_gui(tk.Tk):
         self.block_list_var.set([])
         self.ax.clear()
         self.bd.ax = self.ax
-        self.bd.axis_off()#<-- this doens't work because there is no axis        
+        self.bd.axis_off()#<-- this doens't work because there is no axis
         self.canvas.draw()
         self.refresh_sensor_names()
         self.refresh_actuator_names()
 
-        
+
     #def clear_boxes(self, *args, **kwargs):
     #    attr_list = ["input1_var", "input2_var", "placement_var"]
     #    for attr in attr_list:
@@ -1344,7 +1344,7 @@ class pybd_gui(tk.Tk):
             showinfo(title='Information',
                      message='You must select a block before placing it.')
             return
-        
+
         place_dialog = place_block_dialog(title="Place Block", parent=self)
         block_name = self.blocklistbox.get(selected_indices)
         place_dialog.set_block_to_place(block_name)
@@ -1361,17 +1361,17 @@ class pybd_gui(tk.Tk):
             selected_block_name = self.blocklistbox.get(selected_indices)
             mydialog.block_selector_var.set(selected_block_name)
             mydialog.on_block_selected()
-            
+
         mydialog.grab_set()
 
-        
-        
+
+
         # approach:
         # - get current params
         # - show an edit dialog
         # - probably should allow choosing any existing block
         #     - default to the selected block (if any)
-        
+
 #root = tkinter.Tk()
 #root.wm_title("Embedding in Tk")
 
