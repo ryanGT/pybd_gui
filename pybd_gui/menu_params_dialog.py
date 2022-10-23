@@ -200,9 +200,11 @@ class menu_params_dialog(my_toplevel_window, \
     def load_menu_params_from_bd(self, *args, **kwargs):
         param_strs = []
         int_bool_list = []
-        for row in self.bd.menu_param_list:
-            param_strs.append(row[0])
-            int_bool_list.append(row[1])
+        if hasattr(self.bd, "menu_param_list"):
+            for row in self.bd.menu_param_list:
+                param_strs.append(row[0])
+                int_bool_list.append(row[1])
+        
         self.menu_params_list = param_strs
         self.int_bool_list = int_bool_list
         self.menu_params_var.set(self.menu_params_list)

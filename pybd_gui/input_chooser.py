@@ -31,7 +31,7 @@ from krauss_misc import string_cleaner
 
 class input_chooser(my_toplevel_window):
     def __init__(self, block, parent, title="Input Chooser Dialog", \
-                 geometry='300x200', selected_index=0):
+                 geometry='300x270', selected_index=0):
         super().__init__(parent, title=title, geometry=geometry)
         self.bd = self.parent.bd
         self.selected_index = selected_index

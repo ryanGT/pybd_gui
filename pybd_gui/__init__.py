@@ -29,7 +29,7 @@ The helper dialogs are:
 
 """
 
-version = "1.0.7"
+version = "1.1.2"
 ############################################
 #
 # Features needed:
@@ -373,7 +373,7 @@ class pybd_gui(tk.Tk):
             # Note that this will fail if line_sense and pend_enc already exist
             # and aren't created above:
             G_cart = pybd.cart_pendulum(sensor1=line_sense, sensor2=pend_enc, \
-                                        variable_name='G_cart')
+                                        variable_name='G_cart',label="$G_{cart}$")
             self.append_block_to_dict(G_cart_name, G_cart)
 
 
