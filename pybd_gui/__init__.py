@@ -216,6 +216,7 @@ class pybd_gui(tk.Tk):
         self.menu_blocks = tk.Menu(self.menubar)
         self.menu_block_diagram = tk.Menu(self.menubar)
         self.menu_macros = tk.Menu(self.menubar)
+        self.menu_debug = tk.Menu(self.menubar)
         self.menu_codegen = tk.Menu(self.menubar)
         self.menubar.add_cascade(menu=self.menu_file, label='File')
         self.menubar.add_cascade(menu=self.menu_edit, label='Edit')
@@ -223,6 +224,7 @@ class pybd_gui(tk.Tk):
         self.menubar.add_cascade(menu=self.menu_block_diagram, label='Block Diagram')
         self.menubar.add_cascade(menu=self.menu_codegen, label='Code Generation')
         self.menubar.add_cascade(menu=self.menu_macros, label='Macros')
+        self.menubar.add_cascade(menu=self.menu_debug, label='Debug')
         #self.menubar.add_cascade(menu=self.menu_macros, label='Macros')
 
         self.menu_edit.add_command(label="Edit Block", \
@@ -258,6 +260,11 @@ class pybd_gui(tk.Tk):
         #self.menu_block_diagram.add_command(label="Clear Loop Numbers", command=self.on_clear_loop_numbers)
         self.menu_macros.add_command(label="Add cart/pendulum plant and sensors", \
                 command=self.add_G_cart_and_sensors)
+        self.menu_debug.add_command(label="Print block name list", \
+                command=self.print_block_name_list)
+        self.menu_debug.add_command(label="check execution order", \
+                command=self.check_execution_order)
+
 
         self.arduino_menu = tk.Menu(self.menu_codegen)
         self.menu_codegen.add_cascade(menu=self.arduino_menu, label='Arduino Code Generation')
@@ -325,6 +332,22 @@ class pybd_gui(tk.Tk):
         in pybd_gui.param_list, such as
         `pybd_gui.arduino_template_path`."""
         self.load_params()
+
+
+    def print_block_name_list(self, *args, **kwargs):
+        print("\n"*2)
+        print("block name list:")
+        for item in self.bd.block_name_list:
+            print(item)
+
+
+    def check_execution_order(self, *args, **kwargs):
+        self.bd.find_execution_order()
+        print("\n"*2)
+        print("execution order:")
+        for item in self.bd.execution_order:
+            print(item.variable_name)
+
 
 
     def on_set_menu_params(self, *args, **kwargs):
