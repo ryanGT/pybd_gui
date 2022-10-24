@@ -264,6 +264,9 @@ class pybd_gui(tk.Tk):
                 command=self.print_block_name_list)
         self.menu_debug.add_command(label="check execution order", \
                 command=self.check_execution_order)
+        self.menu_debug.add_command(label="print block dict", \
+                command=self.print_block_dict)
+        
 
 
         self.arduino_menu = tk.Menu(self.menu_codegen)
@@ -347,6 +350,12 @@ class pybd_gui(tk.Tk):
         print("execution order:")
         for item in self.bd.execution_order:
             print(item.variable_name)
+
+
+    def print_block_dict(self, *args, **kwargs):
+        print("block dict:")
+        for name, block in self.bd.block_dict.items():
+            print("%s: %s" % (name, block))
 
 
 
