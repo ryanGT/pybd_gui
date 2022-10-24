@@ -633,8 +633,9 @@ class replace_block_dialog(add_block_dialog):
             new_block.place_absolute(x=x_abs, y=y_abs)
         elif pt == 'relative':
             rel_block_name = place_dict.pop('rel_block_name')
-            rel_block = self.parent.get_block_by_name(rel_block_name)
-            new_block.place_relative(rel_block, **place_dict)
+            if rel_block_name in self.parent.bd.block_dict:
+                rel_block = self.parent.get_block_by_name(rel_block_name)
+                new_block.place_relative(rel_block, **place_dict)
         else:
             pt_str = pt.strip()
             if pt_str:
