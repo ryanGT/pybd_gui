@@ -29,7 +29,7 @@ The helper dialogs are:
 
 """
 
-version = "1.1.2"
+version = "1.1.3"
 ############################################
 #
 # Features needed:
@@ -266,7 +266,7 @@ class pybd_gui(tk.Tk):
                 command=self.check_execution_order)
         self.menu_debug.add_command(label="print block dict", \
                 command=self.print_block_dict)
-        
+
 
 
         self.arduino_menu = tk.Menu(self.menu_codegen)
