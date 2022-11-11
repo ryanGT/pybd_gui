@@ -52,8 +52,12 @@ class edit_blocks_dialog(my_toplevel_window, window_with_param_widgets_that_appe
         self.block_selector_combobox.bind('<<ComboboxSelected>>', self.on_block_selected)
         
         self.required_attrs = ['variable_name','label']
+        self.appearance_attrs = ['width','height']
+        # attributes common to all blocks:
+        self.common_attrs = self.required_attrs + self.appearance_attrs
         self.numbered_attrs = ["param%i" % i for i in range(1,self.max_params+1)]
-        all_attrs = self.required_attrs + self.numbered_attrs
+        all_attrs = self.required_attrs + self.numbered_attrs + \
+                        self.appearance_attrs
         
         for attr in all_attrs:
             # make a label and an entry box for each thing in the list
@@ -73,17 +77,17 @@ class edit_blocks_dialog(my_toplevel_window, window_with_param_widgets_that_appe
         currow += 1
 
 
-    def populate_required_variable_boxes(self, block_instance):
-        for attr in self.required_attrs:
+    def populate_common_variable_boxes(self, block_instance):
+        for attr in self.common_attrs:
             value = getattr(block_instance, attr)
             gui_attr = attr + '_var'
             gui_var = getattr(self, gui_attr)
             gui_var.set(str(value))
 
 
-    def get_required_attrs_as_dict(self):
+    def get_common_attrs_as_dict(self):
         mydict = {}
-        for attr in self.required_attrs:
+        for attr in self.common_attrs:
             gui_attr = attr + '_var'
             gui_var = getattr(self, gui_attr)
             value = gui_var.get()
@@ -102,7 +106,7 @@ class edit_blocks_dialog(my_toplevel_window, window_with_param_widgets_that_appe
         
 
     def build_block_kwargs(self, block_instance):
-        all_block_keys = ['variable_name', 'label'] + block_instance.py_params
+        all_block_keys = self.common_attrs + block_instance.py_params
         all_kwargs_for_block = {}
         for key in all_block_keys:
             value = getattr(block_instance, key)
@@ -114,7 +118,7 @@ class edit_blocks_dialog(my_toplevel_window, window_with_param_widgets_that_appe
         block_name = self.block_selector_var.get()
         print("selected block name: %s" % block_name)
         block_instance = self.bd.get_block_by_name(block_name)
-        self.populate_required_variable_boxes(block_instance)
+        self.populate_common_variable_boxes(block_instance)
         self.selected_block = block_instance
         # next steps:
         # - get numbered params, update the labels and populate the boxes
@@ -141,7 +145,7 @@ class edit_blocks_dialog(my_toplevel_window, window_with_param_widgets_that_appe
         #     - do we want to make this impossible?
         #     - do we want to show comboxes for these
         other_kwargs = self.get_params_kwargs(self.N_params)
-        kwargs = self.get_required_attrs_as_dict()
+        kwargs = self.get_common_attrs_as_dict()
         kwargs.update(other_kwargs)
         self.new_kwargs = kwargs
         print("new_kwargs = %s" % self.new_kwargs)

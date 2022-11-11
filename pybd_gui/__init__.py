@@ -29,7 +29,7 @@ The helper dialogs are:
 
 """
 
-version = "1.1.3"
+version = "1.1.8"
 ############################################
 #
 # Features needed:
@@ -266,7 +266,8 @@ class pybd_gui(tk.Tk):
                 command=self.check_execution_order)
         self.menu_debug.add_command(label="print block dict", \
                 command=self.print_block_dict)
-
+        self.menu_debug.add_command(label="show version", \
+                command=self.show_version)
 
 
         self.arduino_menu = tk.Menu(self.menu_codegen)
@@ -335,6 +336,10 @@ class pybd_gui(tk.Tk):
         in pybd_gui.param_list, such as
         `pybd_gui.arduino_template_path`."""
         self.load_params()
+
+    def show_version(self, *args, **kwargs):
+        msg = "pydb_gui version: %s" % version
+        showinfo(title="Version", message=msg)
 
 
     def print_block_name_list(self, *args, **kwargs):
@@ -434,6 +439,15 @@ class pybd_gui(tk.Tk):
         mydict = pybd.break_string_pairs_to_dict(mylist)
         for key, value in mydict.items():
             setattr(self, key, value)
+
+        # hard code the rpi template path for lab
+        # - rpi_template_path:/home/pi/345_lab_git/robolympics/wiringpi_line_following_i2c_template.c
+        testpath = "~/345_lab_git/robolympics/wiringpi_line_following_i2c_template.c"
+        fullpath = os.path.expanduser(testpath)
+        if os.path.exists(fullpath):
+            self.rpi_template_path = fullpath
+            print("set template path to default:\n %s" % fullpath)
+
 
         if 'csv_path' in mydict:
             #load the model from csv
@@ -1195,7 +1209,15 @@ class pybd_gui(tk.Tk):
             msg = "You cannot set the input(s) \n for a block that has no inputs"
             showinfo(title="Problem", message=msg)
             return None
-        input_dialog = input_chooser(block, parent=self, geometry='300x200', \
+
+        width = 300
+        if N > 2:
+            height = 300
+        else:
+            height = 200
+        geostr = "%ix%i" % (width, height)
+
+        input_dialog = input_chooser(block, parent=self, geometry=geostr, \
                                      selected_index=selected_index)
         input_dialog.grab_set()#<-- this "unchooses" the block
 
