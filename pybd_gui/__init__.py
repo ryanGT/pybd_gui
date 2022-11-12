@@ -29,7 +29,7 @@ The helper dialogs are:
 
 """
 
-version = "1.1.8"
+version = "1.2.1"
 ############################################
 #
 # Features needed:
